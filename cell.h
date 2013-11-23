@@ -1,0 +1,1 @@
+void initializeCells(int ***cells, int x, int y);

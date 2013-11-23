@@ -1,0 +1,46 @@
+<interface>
+  <object id="window" class="GtkWindow">
+    <property name="visible">True</property>
+    <property name="title">Simple tumor sim 2d</property>
+    <property name="border-width">10</property>
+    <property name="default-width">800</property>
+    <property name="default-height">800</property>
+    <child>
+      <object id="grid" class="GtkGrid">
+        <property name="visible">True</property>
+        <child>
+          <object id="startButon" class="GtkButton">
+            <property name="visible">True</property>
+            <property name="label">Start</property>
+          </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object id="stopButon" class="GtkButton">
+            <property name="visible">True</property>
+            <property name="label">Stop</property>
+          </object>
+          <packing>
+            <property name="left-attach">1</property>
+            <property name="top-attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object id="frame" class="GtkFrame">
+            <property name="visible">True</property>
+          </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">1</property>
+            <property name="width">3</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+      </packing>
+    </child>
+  </object>
+</interface>
