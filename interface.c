@@ -13,19 +13,20 @@ GtkBuilder *createButtons() {
 
 void clear_surface(){
   cairo_t *cr;
-
+printf("clearing\n\n");
   cr = cairo_create(surface);
 
-  cairo_set_source_rgb(cr, 1, 1, 1);
+  cairo_set_source_rgb(cr, 0.5, 0.5, 0.5);
   cairo_paint(cr);
 
   cairo_destroy(cr);
 }
 
 gboolean configure_event_cb(GtkWidget *widget, GdkEventConfigure *event, gpointer data){
+
   if(surface)
     cairo_surface_destroy(surface);
-
+  //gtk_widget_override_background_color(widget, GTK_STATE_NORMAL, color);
   surface = gdk_window_create_similar_surface(gtk_widget_get_window (widget),
                                        CAIRO_CONTENT_COLOR,
                                        gtk_widget_get_allocated_width (widget),
@@ -35,9 +36,14 @@ gboolean configure_event_cb(GtkWidget *widget, GdkEventConfigure *event, gpointe
   return TRUE;
 }
 
-gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer data){
-  cairo_set_source_surface(cr, surface, 0, 0);
-  cairo_paint(cr);
-
-  return FALSE;
+void draw_sq(cairo_t *cr, gdouble x, gdouble y, int width){
+  cairo_rectangle(cr, x , y, width, width);
 }
+
+void draw_cir(cairo_t *cr, gdouble x, gdouble y, int width){
+  cairo_arc(cr, x, y, width / 2.0, 0, 2 * G_PI);
+}
+
+
+
+

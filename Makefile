@@ -1,10 +1,10 @@
 CFLAGS = $(shell pkg-config --cflags --libs gtk+-3.0)
 
-tumor2d: tumor2d.c buttons.o cell.o
-	gcc tumor2d.c buttons.o cell.o -o bin/tumor2d $(CFLAGS)
+tumor2d: tumor2d.c interface.o cell.o
+	gcc tumor2d.c interface.o cell.o -o bin/tumor2d $(CFLAGS)
 
-buttons.o: buttons.c
-	gcc -c buttons.c $(CFLAGS)
+interface.o: interface.c
+	gcc -c interface.c $(CFLAGS)
 
 cell.o: cell.c
 	gcc -c cell.c $(CFLAGS)

@@ -3,8 +3,8 @@
     <property name="visible">True</property>
     <property name="title">Simple tumor sim 2d</property>
     <property name="border-width">10</property>
-    <property name="default-width">800</property>
-    <property name="default-height">800</property>
+    <property name="default-width">200</property>
+    <property name="default-height">200</property>
     <child>
       <object id="grid" class="GtkGrid">
         <property name="visible">True</property>
