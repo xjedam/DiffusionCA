@@ -9,27 +9,27 @@
 #define CELL_SIZE 15
 #define TITLE "Simple tumor simulator 2d"
 
-static gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer data){
+int **cells;
 
+static gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer data){
+  clear_surface(cr);
   guint width, height;
   GdkRGBA color = {.5, .5, .5, 1.0};
   gdk_cairo_set_source_rgba (cr, &color);
   width = gtk_widget_get_allocated_width (widget);
   height = gtk_widget_get_allocated_height (widget);
   drawCell(cr, 1,1,1,CELL_SIZE);
-  cairo_fill (cr);
+  moveCell(cr, 1, 1, 1, 4, CELL_SIZE);
+  gdk_cairo_set_source_rgba (cr, &color);
   drawCell(cr, 1,1,2,CELL_SIZE);
-  cairo_fill (cr);
   drawCell(cr, 1,2,2,CELL_SIZE);
-  cairo_fill (cr);
+  eraseCell(cr, 2,2,CELL_SIZE);
+  gdk_cairo_set_source_rgba (cr, &color);
+  drawCell(cr, 1,2,3,CELL_SIZE);
 
   // gtk_style_context_get_color (gtk_widget_get_style_context (widget),
   //                              0,
   //                              &color);
-  
-
-  cairo_fill (cr);
-
  return FALSE;
 }
 
@@ -46,8 +46,7 @@ int main(int argc, char *argv[]) {
   GtkWidget *da;
   GObject *window;
   GObject *startButton, *stopButton, *frame;
-  int **cells;
-
+  
   initializeCells(&cells, MODEL_SIZE_X, MODEL_SIZE_Y);
   gtk_init(&argc, &argv);
 

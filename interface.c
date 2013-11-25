@@ -11,15 +11,13 @@ GtkBuilder *createButtons() {
   return builder;
 }
 
-void clear_surface(){
-  cairo_t *cr;
-printf("clearing\n\n");
-  cr = cairo_create(surface);
+void clear_surface(cairo_t *cr){
+  printf("clearing\n\n");
 
-  cairo_set_source_rgb(cr, 0.5, 0.5, 0.5);
+  cairo_set_source_rgb(cr, 0, 0, 0);
   cairo_paint(cr);
 
-  cairo_destroy(cr);
+  //cairo_destroy(cr);
 }
 
 gboolean configure_event_cb(GtkWidget *widget, GdkEventConfigure *event, gpointer data){
@@ -32,7 +30,7 @@ gboolean configure_event_cb(GtkWidget *widget, GdkEventConfigure *event, gpointe
                                        gtk_widget_get_allocated_width (widget),
                                        gtk_widget_get_allocated_height (widget));
 
-  clear_surface();
+  //clear_surface();
   return TRUE;
 }
 
