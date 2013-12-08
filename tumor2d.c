@@ -1,31 +1,54 @@
 #include <gtk/gtk.h>
 #include "interface.h"
+#include "main.h"
 #include "cell.h"
 
-#define MODEL_SIZE_X 200
-#define MODEL_SIZE_Y 200
-#define WINDOW_SIZE_X 800
-#define WINDOW_SIZE_Y 800
-#define CELL_SIZE 15
-#define TITLE "Simple tumor simulator 2d"
+int **cells, **buff;
 
-int **cells;
+static void calculate_cycle(GtkWidget *widget) {
+  int i, j, **tmp;
+  for(i = 0; i<MODEL_SIZE_X; i++) {
+    for(j = 0; j<MODEL_SIZE_Y; j++) {
+      if(cells[i][j] != 0) {
+        calculateCell(cells, buff, i, j);
+      } else {
+        //buff[i][j] = 0;
+      }
+    }
+  }
+  tmp = cells;
+  cells = buff;
+  buff = tmp;
+  gtk_widget_queue_draw(widget);
+}
 
-static gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer data){
+static gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer data) {
+  int i, j;
   clear_surface(cr);
   guint width, height;
   GdkRGBA color = {.5, .5, .5, 1.0};
   gdk_cairo_set_source_rgba (cr, &color);
   width = gtk_widget_get_allocated_width (widget);
   height = gtk_widget_get_allocated_height (widget);
-  drawCell(cr, 1,1,1,CELL_SIZE);
-  moveCell(cr, 1, 1, 1, 4, CELL_SIZE);
-  gdk_cairo_set_source_rgba (cr, &color);
-  drawCell(cr, 1,1,2,CELL_SIZE);
-  drawCell(cr, 1,2,2,CELL_SIZE);
-  eraseCell(cr, 2,2,CELL_SIZE);
-  gdk_cairo_set_source_rgba (cr, &color);
-  drawCell(cr, 1,2,3,CELL_SIZE);
+  // drawCell(cr, 1,1,1,CELL_SIZE);
+  // moveCell(cr, 1, 1, 1, 4, CELL_SIZE);
+  // gdk_cairo_set_source_rgba (cr, &color);
+  // drawCell(cr, 1,1,2,CELL_SIZE);
+  // drawCell(cr, 1,2,2,CELL_SIZE);
+  // eraseCell(cr, 2,2,CELL_SIZE);
+  // gdk_cairo_set_source_rgba (cr, &color);
+  // drawCell(cr, 1,2,3,CELL_SIZE);
+  for(i = 0; i<MODEL_SIZE_X; i++) {
+    for(j = 0; j<MODEL_SIZE_Y; j++) {
+      if(cells[i][j] != 0) {
+        drawCell(cr, i, j, cells[i][j], CELL_SIZE);
+      } else {
+        //eraseCell(cr, i, j, CELL_SIZE);
+        //gdk_cairo_set_source_rgba (cr, &color);
+      }
+    }
+  }
+  calculate_cycle(widget);
 
   // gtk_style_context_get_color (gtk_widget_get_style_context (widget),
   //                              0,
@@ -48,6 +71,9 @@ int main(int argc, char *argv[]) {
   GObject *startButton, *stopButton, *frame;
   
   initializeCells(&cells, MODEL_SIZE_X, MODEL_SIZE_Y);
+  initializeCells(&buff, MODEL_SIZE_X, MODEL_SIZE_Y);
+  cells[3][3] = 5;
+  cells[6][5] = 7;
   gtk_init(&argc, &argv);
 
   builder = createButtons();
