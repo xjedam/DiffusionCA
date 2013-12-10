@@ -12,7 +12,7 @@ GtkBuilder *createButtons() {
 }
 
 void clear_surface(cairo_t *cr){
-  printf("clearing\n\n");
+  //printf("clearing\n\n");
 
   cairo_set_source_rgb(cr, 0, 0, 0);
   cairo_paint(cr);
@@ -39,7 +39,7 @@ void draw_sq(cairo_t *cr, gdouble x, gdouble y, int width){
 }
 
 void draw_cir(cairo_t *cr, gdouble x, gdouble y, int width){
-  cairo_arc(cr, x, y, width / 2.0, 0, 2 * G_PI);
+  cairo_arc(cr, x+1, y+1, width / 2.0, 0, 2 * G_PI);
 }
 
 

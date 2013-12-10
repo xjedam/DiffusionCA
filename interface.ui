@@ -9,7 +9,7 @@
       <object id="grid" class="GtkGrid">
         <property name="visible">True</property>
         <child>
-          <object id="startButon" class="GtkButton">
+          <object id="startButton" class="GtkButton">
             <property name="visible">True</property>
             <property name="label">Start</property>
           </object>
@@ -19,7 +19,7 @@
           </packing>
         </child>
         <child>
-          <object id="stopButon" class="GtkButton">
+          <object id="stopButton" class="GtkButton">
             <property name="visible">True</property>
             <property name="label">Stop</property>
           </object>
