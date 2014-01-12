@@ -46,13 +46,17 @@ static gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer data) {
   // eraseCell(cr, 2,2,CELL_SIZE);
   // gdk_cairo_set_source_rgba (cr, &color);
   // drawCell(cr, 1,2,3,CELL_SIZE);
+  int count = 0;
   for(i = 0; i<MODEL_SIZE_X; i++) {
     for(j = 0; j<MODEL_SIZE_Y; j++) {
       if(cells[i][j] != 0) {
+        count++;
+        //printf("%i at [%i, %i]; ", cells[i][j], i, j);
         drawCell(cr, i, j, cells[i][j], CELL_SIZE);
       }
     }
   }
+  printf("count: %i\n", count);
   if(!isPause) {
     calculate_cycle(widget);
   }
@@ -85,13 +89,13 @@ static gboolean buttonPressCallback(GtkWidget *widget, GdkEventButton *event, gp
   if (event->button == 1)
     {
       //printf("Przycisk wcisniety [%f, %f]\n", event->x, event->y);
-      createCell((rand()%8)+2, event->x/(CELL_SIZE+CELL_SEPARATION), event->y/(CELL_SIZE+CELL_SEPARATION), cells);
+      createCell(CHANGE_TYPE((rand()%8)+2,(rand()%5)+1), event->x/(CELL_SIZE+CELL_SEPARATION)-1, event->y/(CELL_SIZE+CELL_SEPARATION)-1, cells);
       gtk_widget_queue_draw(widget);
       //draw_brush (widget, event->x, event->y);
     }
   else if (event->button == 3)
     {
-      createCell(0, event->x/(CELL_SIZE+CELL_SEPARATION), event->y/(CELL_SIZE+CELL_SEPARATION), cells);
+      createCell(0, event->x/(CELL_SIZE+CELL_SEPARATION)-1, event->y/(CELL_SIZE+CELL_SEPARATION)-1, cells);
       gtk_widget_queue_draw(widget);
       //clear_surface ();
       //gtk_widget_queue_draw (widget);
@@ -104,7 +108,7 @@ static gboolean buttonPressCallback(GtkWidget *widget, GdkEventButton *event, gp
 static gboolean mouseMotionCallback(GtkWidget *widget, GdkEventMotion *event, gpointer data) {
 
   if (event->state & GDK_BUTTON1_MASK) {
-    createCell((rand()%8)+2, event->x/(CELL_SIZE+CELL_SEPARATION), event->y/(CELL_SIZE+CELL_SEPARATION), cells);
+    createCell(CHANGE_TYPE((rand()%8)+2,(rand()%5)+1), event->x/(CELL_SIZE+CELL_SEPARATION) - 1, event->y/(CELL_SIZE+CELL_SEPARATION) - 1, cells);
     gtk_widget_queue_draw(widget);
     //createCell(4, event->x/(CELL_SIZE+CELL_SEPARATION), event->y/(CELL_SIZE+CELL_SEPARATION), cells);
     //printf("Przycisk ciagniety [%f, %f]\n", event->x, event->y);
@@ -125,12 +129,17 @@ int main(int argc, char *argv[]) {
   
   initializeCells(&cells, MODEL_SIZE_X, MODEL_SIZE_Y);
   initializeCells(&buff, MODEL_SIZE_X, MODEL_SIZE_Y);
-  cells[13][3] = MOVING_DOWN;
-  cells[16][3] = MOVING_DOWN_L;
-  cells[26][45] = 3;
-  cells[52][45] = MOVING_R;
-  cells[72][45] = MOVING_L;
-  cells[26][45] = 3;
+  //cells[52][45] = CHANGE_TYPE(MOVING_R, TYPE1);
+  //cells[72][45] = CHANGE_TYPE(MOVING_L, TYPE2);
+  //cells[53][47] = CHANGE_TYPE(MOVING_R, TYPE3);
+  //cells[72][47] = CHANGE_TYPE(MOVING_L, TYPE4);
+
+  cells[20][20] = CHANGE_TYPE(MOVING_R, TYPE1);
+  cells[26][26] = CHANGE_TYPE(MOVING_UP, TYPE5);
+
+  cells[55][8] = CHANGE_TYPE(MOVING_DOWN_L, TYPE1);
+  cells[55][9] = CHANGE_TYPE(MOVING_L, TYPE2);
+  //cells[26][45] = 3;
   gtk_init(&argc, &argv);
 
   builder = createButtons();
