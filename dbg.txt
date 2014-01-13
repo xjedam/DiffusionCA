@@ -1,0 +1,8 @@
+count: 38
+Niekolizyjny? przypadek [40, 38] wektor 6 z [40, 39] wektor 6 lub 0
+zderzenie czolowe do tej samej komorki[40, 41] wektor 2 z [40, 40] wektor 0 lub 6
+zderzenie czolowe do tej samej komorki[40, 40] wektor 2 z [40, 39] wektor 0 lub 6
+Generyczny przypadek zderzenia na wejscie [41, 40] wektor 8 z [40, 40] wektor 6
+zderzenie czolowe do tej samej komorki[40, 40] wektor 8 z [39, 40] wektor 0 lub 4
+Wepchniecie w ten sam kierunek z innego zderzenia!
+count: 37
