@@ -165,7 +165,7 @@ void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 				//zderzenie pod katem prostym na komorke wchodzaca	x->o
 				//																										 ^x
 			} else if(DIRECTION(buff[toX][toY]) != 0 && DIRECTION(buff[toX][toY]) != STATIONARY && 
-					(DIRECTION(buff[toX][toY]) % 8) + 2 == DIRECTION(cells[fromX][fromY]) || (DIRECTION(cells[fromX][fromY]) % 8) + 2 == DIRECTION(buff[toX][toY]))) {
+					((DIRECTION(buff[toX][toY]) % 8) + 2 == DIRECTION(cells[fromX][fromY]) || (DIRECTION(cells[fromX][fromY]) % 8) + 2 == DIRECTION(buff[toX][toY]))) {
 				printf("Zderzenie kat prosty wej [%i, %i] wektor %i z [%i, %i] wektor %i lub %i\n", fromX, fromY, DIRECTION(cells[fromX][fromY]),
 				 toX, toY, DIRECTION(cells[toX][toY]), DIRECTION(buff[toX][toY]));
 				tmp = DIRECTION(buff[toX][toY]);
