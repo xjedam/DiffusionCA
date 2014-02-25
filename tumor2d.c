@@ -71,16 +71,52 @@ static gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) 
   g_print("delete event occurred\n");
   return FALSE;
 }
+
 static void destroy(GtkWidget *widget, gpointer data){
   gtk_main_quit();
 }
+
 static void startButtonCallback(GtkWidget *widget, gpointer data) {
   isPause = 0;
   GtkWidget *area = GTK_WIDGET(data);
   gtk_widget_queue_draw(area);
 }
+
 static void stopButtonCallback(GtkWidget *widget, gpointer data) {
   printf("PAUSE clicked\n");
+  isPause = 1;
+}
+
+static void saveButtonCallback(GtkWidget *widget, gpointer data) {
+  int i;
+  printf("save clicked\n");
+  GtkEntry *filenameEntry = GTK_ENTRY(data);
+  char *filename = (char *)gtk_entry_get_text( filenameEntry );
+  printf("%s", filename);
+  FILE *fp;
+  fp = fopen(filename, "w");
+
+  for(i = 0; i < MODEL_SIZE_X; i++)
+  {
+    fwrite(cells[i], sizeof(int),MODEL_SIZE_Y, fp);
+  }
+  fclose(fp);
+}
+
+static void loadButtonCallback(GtkWidget *widget, gpointer data) {
+  int i;
+  printf("load clicked\n");
+  GtkEntry *filenameEntry = GTK_ENTRY(data);
+  char *filename = (char *)gtk_entry_get_text(filenameEntry);
+  FILE *fp;
+  fp = fopen(filename, "r");
+
+  for(i = 0; i < MODEL_SIZE_X; i++)
+  {
+    fread(cells[i], sizeof(int),MODEL_SIZE_Y, fp);
+  }
+  fclose(fp);
+  gtk_widget_queue_draw(gtk_widget_get_toplevel(widget));
   isPause = 1;
 }
 
@@ -122,7 +158,7 @@ int main(int argc, char *argv[]) {
   GtkBuilder *builder;
   GtkWidget *da;
   GObject *window;
-  GObject *startButton, *stopButton, *frame;
+  GObject *startButton, *stopButton, *frame, *saveButton, *loadButton, *filenameEntry;
   start = clock();
   int seed = time(NULL);
   srand(seed);
@@ -148,7 +184,12 @@ int main(int argc, char *argv[]) {
   gtk_window_set_title (GTK_WINDOW (window), TITLE);
   startButton = gtk_builder_get_object(builder, "startButton");
   stopButton = gtk_builder_get_object(builder, "stopButton");
+  saveButton = gtk_builder_get_object(builder, "saveButton");
+  loadButton = gtk_builder_get_object(builder, "loadButton");
+  filenameEntry = gtk_builder_get_object(builder, "filenameEntry");
   g_signal_connect (stopButton, "clicked", G_CALLBACK (stopButtonCallback), NULL);
+  g_signal_connect (saveButton, "clicked", G_CALLBACK (saveButtonCallback), filenameEntry);
+  g_signal_connect (loadButton, "clicked", G_CALLBACK (loadButtonCallback), filenameEntry);
   frame = gtk_builder_get_object(builder, "frame");
   g_signal_connect(window, "destroy", G_CALLBACK(destroy), NULL);
 
