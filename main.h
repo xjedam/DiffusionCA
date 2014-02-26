@@ -4,7 +4,7 @@
 #define CELL_SEPARATION 1
 #define WINDOW_SIZE_X 850
 #define WINDOW_SIZE_Y 850
-#define ITER_DELAY 0.1
+#define ITER_DELAY 0.2
 #define TITLE "Simple tumor simulator 2d"
 
 #if defined(__CYGWIN__) || defined(_WIN64) || defined(_WIN32) || defined(__CYGWIN__)
