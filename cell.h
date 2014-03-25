@@ -26,3 +26,5 @@ void calculateCell(int **cells, int **buff, int x, int y);
 void changeStateCell(int state, int x, int y, int **buff);
 void createCell(int state, int x, int y, int **buff);
 void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff);
+void calculateHeadCollisionFar(int fromX, int fromY, int toX, int toY, int **cells, int **buff);
+void calculateHeadCollisionNear(int fromX, int fromY, int toX, int toY, int **cells, int **buff);

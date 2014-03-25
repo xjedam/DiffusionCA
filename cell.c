@@ -140,27 +140,14 @@ void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 					abs(DIRECTION(buff[toX][toY]) - DIRECTION(cells[fromX][fromY])) == 4){
 				printf("zderzenie czolowe do tej samej komorki[%i, %i] wektor %i z [%i, %i] wektor %i lub %i\n", fromX, fromY, DIRECTION(cells[fromX][fromY]),
 				 toX, toY, DIRECTION(cells[toX][toY]), DIRECTION(buff[toX][toY]));
-				buff[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], OPPOSITE_DIRECTION(DIRECTION(cells[fromX][fromY])));
-				//printf("%i\n", buff[fromX][fromY]);
-				cells[fromX][fromY] = 0;
-				//printf("to: %i ", buff[toX][toY]);
-				cells[toX][toY] = CHANGE_DIRECTION(buff[toX][toY], OPPOSITE_DIRECTION(DIRECTION(buff[toX][toY])));
-				//printf(" %i\n", cells[toX][toY]);
-				buff[toX][toY] = 0;
-				calculateCell(cells, buff, toX, toY);
-				cells[toX][toY] = 0;
+				calculateHeadCollisionFar(fromX, fromY, toX, toY, cells, buff);
 				//dbgCount(cells, id);
 				//zderzenie czolowe do roznych komorek x-><-x
 			} else if((cells[toX][toY] != 0 && DIRECTION(cells[toX][toY]) != STATIONARY &&
 					abs(DIRECTION(cells[toX][toY]) - DIRECTION(cells[fromX][fromY])) == 4)) {
 				printf("zderzenie czolowe do roznych komorek [%i, %i] wektor %i z [%i, %i] wektor %i lub %i\n", fromX, fromY, DIRECTION(cells[fromX][fromY]),
 				 toX, toY, DIRECTION(cells[toX][toY]), DIRECTION(buff[toX][toY]));
-				cells[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], OPPOSITE_DIRECTION(DIRECTION(cells[fromX][fromY])));
-				cells[toX][toY] = CHANGE_DIRECTION(cells[toX][toY], OPPOSITE_DIRECTION(DIRECTION(cells[toX][toY])));
-				calculateCell(cells, buff, fromX, fromY);
-				cells[fromX][fromY] = 0;
-				calculateCell(cells, buff, toX, toY);
-				cells[toX][toY] = 0;
+				calculateHeadCollisionNear(fromX, fromY, toX, toY, cells, buff);
 				//dbgCount(cells, id);
 				//zderzenie pod katem prostym na komorke wchodzaca	x->o
 				//																										 ^x
@@ -240,6 +227,47 @@ void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 				//dbgCount(cells, id);
 			}
 		}
+	}
+}
+
+void calculateHeadCollisionFar(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
+	int rnd = rand() % 100;
+	if(rnd < PREDICTIVE_BOUNCE_CHANCE) {
+		buff[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], OPPOSITE_DIRECTION(DIRECTION(cells[fromX][fromY])));
+		//printf("%i\n", buff[fromX][fromY]);
+		cells[fromX][fromY] = 0;
+		//printf("to: %i ", buff[toX][toY]);
+		cells[toX][toY] = CHANGE_DIRECTION(buff[toX][toY], OPPOSITE_DIRECTION(DIRECTION(buff[toX][toY])));
+		//printf(" %i\n", cells[toX][toY]);
+		buff[toX][toY] = 0;
+		calculateCell(cells, buff, toX, toY);
+		cells[toX][toY] = 0;
+	} else {
+		buff[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], ((DIRECTION(cells[fromX][fromY]) + ((rnd % 2) * 4)) % 8) + 2);
+		cells[fromX][fromY] = 0;
+		cells[toX][toY] = CHANGE_DIRECTION(buff[toX][toY], ((DIRECTION(buff[toX][toY]) + ((rnd % 2) * 4)) % 8) + 2);
+		buff[toX][toY] = 0;
+		calculateCell(cells, buff, toX, toY);
+		cells[toX][toY] = 0;
+	}
+}
+
+void calculateHeadCollisionNear(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
+	int rnd = rand() % 100;
+	if(rnd < PREDICTIVE_BOUNCE_CHANCE) {
+		cells[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], OPPOSITE_DIRECTION(DIRECTION(cells[fromX][fromY])));
+		cells[toX][toY] = CHANGE_DIRECTION(cells[toX][toY], OPPOSITE_DIRECTION(DIRECTION(cells[toX][toY])));
+		calculateCell(cells, buff, fromX, fromY);
+		cells[fromX][fromY] = 0;
+		calculateCell(cells, buff, toX, toY);
+		cells[toX][toY] = 0;
+	} else {
+		cells[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], ((DIRECTION(cells[fromX][fromY]) + ((rnd % 2) * 4)) % 8) + 2);
+		cells[toX][toY] = CHANGE_DIRECTION(cells[toX][toY], ((DIRECTION(cells[toX][toY]) + ((rnd % 2) * 4)) % 8) + 2);
+		calculateCell(cells, buff, fromX, fromY);
+		cells[fromX][fromY] = 0;
+		calculateCell(cells, buff, toX, toY);
+		cells[toX][toY] = 0;
 	}
 }
 
