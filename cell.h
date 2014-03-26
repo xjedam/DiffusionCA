@@ -19,6 +19,10 @@
 #define TYPE5                     5
 #define CHANGE_TYPE(c, t)         ((c & 0xFFFFFF0F) | (t << 4))     
 
+#define DIVISIONS_LEFT(cell)      ((cell & 0x3F00) >> 8)
+#define SET_DIVISIONS_LEFT(c, t)  ((c & 0xFFFFC0FF) | (t << 8)) 
+#define SUB_DIVISIONS_LEFT(c, t)  ((((c & 0x3F00) >> 8) - 1) << 8 | (c & 0xFFFFC0FF)) 
+
 void initializeCells(int ***cells, int x, int y);
 void drawCell(cairo_t *cr, int cell, int x, int y, int size);
 void eraseCell(cairo_t *cr, int x, int y, int size);
@@ -26,3 +30,5 @@ void calculateCell(int **cells, int **buff, int x, int y);
 void changeStateCell(int state, int x, int y, int **buff);
 void createCell(int state, int x, int y, int **buff);
 void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff);
+void calculateHeadCollisionFar(int fromX, int fromY, int toX, int toY, int **cells, int **buff);
+void calculateHeadCollisionNear(int fromX, int fromY, int toX, int toY, int **cells, int **buff);

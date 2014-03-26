@@ -1,16 +1,18 @@
 #include <gtk/gtk.h>
+#include <stdlib.h>
 #include <time.h>
 #include "interface.h"
 #include "main.h"
 #include "cell.h"
+#include "statistic.h"
 
 int **cells, **buff, isPause = 1;
 clock_t start, stop;
 
 static void calculate_cycle(GtkWidget *widget) {
   int i, j, **tmp;
-  for(i = 0; i<MODEL_SIZE_X; i++) {
-    for(j = 0; j<MODEL_SIZE_Y; j++) {
+  for(i = 0; i < MODEL_SIZE_X; i++) {
+    for(j = 0; j < MODEL_SIZE_Y; j++) {
       if(cells[i][j] != 0) {
         calculateCell(cells, buff, i, j);
       }
@@ -19,6 +21,8 @@ static void calculate_cycle(GtkWidget *widget) {
   tmp = cells;
   cells = buff;
   buff = tmp;
+  printStatistics(stdout, cells, FALSE);
+
   if(!isPause) {
     gtk_widget_queue_draw(widget);
   }
@@ -47,8 +51,8 @@ static gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer data) {
   // gdk_cairo_set_source_rgba (cr, &color);
   // drawCell(cr, 1,2,3,CELL_SIZE);
   int count = 0;
-  for(i = 0; i<MODEL_SIZE_X; i++) {
-    for(j = 0; j<MODEL_SIZE_Y; j++) {
+  for(i = 0; i < MODEL_SIZE_X; i++) {
+    for(j = 0; j < MODEL_SIZE_Y; j++) {
       if(cells[i][j] != 0) {
         count++;
         //printf("%i at [%i, %i]; ", cells[i][j], i, j);
@@ -61,9 +65,6 @@ static gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer data) {
     calculate_cycle(widget);
   }
 
-  // gtk_style_context_get_color (gtk_widget_get_style_context (widget),
-  //                              0,
-  //                              &color);
  return FALSE;
 }
 
@@ -137,7 +138,6 @@ static gboolean buttonPressCallback(GtkWidget *widget, GdkEventButton *event, gp
       //gtk_widget_queue_draw (widget);
     }
 
-  /* We've handled the event, stop processing */
   return FALSE;
 }
 
@@ -150,7 +150,6 @@ static gboolean mouseMotionCallback(GtkWidget *widget, GdkEventMotion *event, gp
     //printf("Przycisk ciagniety [%f, %f]\n", event->x, event->y);
   }
 
-  /* We've handled it, stop processing */
   return TRUE;
 }
 
@@ -165,6 +164,7 @@ int main(int argc, char *argv[]) {
   
   initializeCells(&cells, MODEL_SIZE_X, MODEL_SIZE_Y);
   initializeCells(&buff, MODEL_SIZE_X, MODEL_SIZE_Y);
+  printStatistics(stdout, cells, TRUE);
   //cells[52][45] = CHANGE_TYPE(MOVING_R, TYPE1);
   //cells[72][45] = CHANGE_TYPE(MOVING_L, TYPE2);
   //cells[53][47] = CHANGE_TYPE(MOVING_R, TYPE3);
