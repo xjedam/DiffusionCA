@@ -49,39 +49,103 @@ void eraseCell(cairo_t *cr, int x, int y, int size) {
 }
 
 void calculateCell(int **cells, int **buff, int x, int y) {
-	//printf("%i %i\n", x, y);
+	int target_y, target_x;
 	switch(DIRECTION(cells[x][y])) {
 		case MOVING_UP:
-			moveCell(x, y, x, (y-1+MODEL_SIZE_Y) % MODEL_SIZE_Y, cells, buff);
-			//buff[x][(y-1+MODEL_SIZE_Y) % MODEL_SIZE_Y] = cells[x][y];
+			if(y > 0) {
+				target_y = y - 1;
+			} else {
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_DOWN);
+				target_y = y + 1;
+			}
+			moveCell(x, y, x, target_y, cells, buff);
 		break;
 		case MOVING_UP_R:
-			moveCell(x, y, (x+1) % MODEL_SIZE_X, (y-1+MODEL_SIZE_Y) % MODEL_SIZE_Y, cells, buff);
-			//buff[(x+1) % MODEL_SIZE_X][(y-1+MODEL_SIZE_Y) % MODEL_SIZE_Y] = cells[x][y];
+			if(y > 0 && x + 1 < MODEL_SIZE_X) {
+				target_y = y - 1; target_x = x + 1;
+			} else if(y <= 0 && x+1 >= MODEL_SIZE_X) {
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_DOWN_L);
+				target_y = y + 1;  target_x = x - 1;
+			} else if(y <= 0){
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_DOWN_R);
+				target_y = y + 1;  target_x = x + 1;
+			} else {
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_UP_L);
+				target_y = y - 1;  target_x = x - 1;
+			}
+			moveCell(x, y, target_x, target_y, cells, buff);
 		break;
 		case MOVING_UP_L:
-			moveCell(x, y, (x-1+MODEL_SIZE_X) % MODEL_SIZE_X, (y-1+MODEL_SIZE_Y) % MODEL_SIZE_Y, cells, buff);
-			//buff[(x-1+MODEL_SIZE_X) % MODEL_SIZE_X][(y-1+MODEL_SIZE_Y) % MODEL_SIZE_Y] = cells[x][y];
+			if(y > 0 && x > 0) {
+				target_y = y - 1; target_x = x - 1;
+			} else if(y <= 0 && x <= 0) {
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_DOWN_R);
+				target_y = y + 1;  target_x = x + 1;
+			} else if(y <= 0){
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_DOWN_L);
+				target_y = y + 1;  target_x = x - 1;
+			} else {
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_UP_R);
+				target_y = y - 1;  target_x = x + 1;
+			}
+			moveCell(x, y, target_x, target_y, cells, buff);
 		break;
 		case MOVING_L:
-			moveCell(x, y, (x-1+MODEL_SIZE_X) % MODEL_SIZE_X, y, cells, buff);
-			//buff[(x-1+MODEL_SIZE_X) % MODEL_SIZE_X][y] = cells[x][y];
+			if(x > 0) {
+				target_x = x - 1;
+			} else {
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_R);
+				target_x = x + 1;
+			}
+			moveCell(x, y, target_x % MODEL_SIZE_X, y, cells, buff);
 		break;
 		case MOVING_R:
-			moveCell(x, y, (x+1) % MODEL_SIZE_X, y, cells, buff);
-			//buff[(x+1) % MODEL_SIZE_X][y] = cells[x][y];
+			if(x+1 < MODEL_SIZE_X) {
+				target_x = x + 1;
+			} else {
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_L);
+				target_x = x - 1;
+			}
+			moveCell(x, y, target_x, y, cells, buff);
 		break;
 		case MOVING_DOWN:
-			moveCell(x, y, x, (y+1) % MODEL_SIZE_Y, cells, buff);
-			//buff[x][(y+1) % MODEL_SIZE_Y] = cells[x][y];
+			if(y+1 < MODEL_SIZE_Y) {
+				target_y = y + 1;
+			} else {
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_UP);
+				target_y = y - 1;
+			}
+			moveCell(x, y, x, target_y, cells, buff);
 		break;
 		case MOVING_DOWN_R:
-			moveCell(x, y, (x+1) % MODEL_SIZE_X, (y+1) % MODEL_SIZE_Y, cells, buff);
-			//buff[(x+1) % MODEL_SIZE_X][(y+1) % MODEL_SIZE_Y] = cells[x][y];
+			if(y+1 < MODEL_SIZE_Y && x+1 < MODEL_SIZE_X) {
+				target_y = y + 1; target_x = x + 1;
+			} else if(y+1 >= MODEL_SIZE_Y && x+1 >= MODEL_SIZE_X) {
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_UP_L);
+				target_y = y - 1;  target_x = x - 1;
+			} else if(y+1 >= MODEL_SIZE_Y){
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_UP_R);
+				target_y = y - 1;  target_x = x + 1;
+			} else {
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_DOWN_L);
+				target_y = y + 1;  target_x = x - 1;
+			}
+			moveCell(x, y, target_x, target_y, cells, buff);
 		break;
 		case MOVING_DOWN_L:
-			moveCell(x, y, (x-1+MODEL_SIZE_X) % MODEL_SIZE_X, (y+1) % MODEL_SIZE_Y, cells, buff);
-			//buff[(x-1+MODEL_SIZE_X) % MODEL_SIZE_X][(y+1) % MODEL_SIZE_Y] = cells[x][y];
+			if(y+1 < MODEL_SIZE_Y && x > 0) {
+				target_y = y + 1; target_x = x - 1;
+			}	else if(y+1 >= MODEL_SIZE_Y && x <= 0) {
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_UP_R);
+				target_y = y - 1;  target_x = x + 1;
+			} else if(y+1 >= MODEL_SIZE_Y){
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_UP_L);
+				target_y = y - 1;  target_x = x - 1;
+			} else {
+				cells[x][y] = CHANGE_DIRECTION(cells[x][y], MOVING_DOWN_R);
+				target_y = y + 1;  target_x = x + 1;
+			}
+			moveCell(x, y, target_x, target_y, cells, buff);
 		break;
 		case STATIONARY:
 			moveCell(x, y, x, y, cells, buff);
