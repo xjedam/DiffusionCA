@@ -21,7 +21,11 @@
 
 #define DIVISIONS_LEFT(cell)      ((cell & 0x3F00) >> 8)
 #define SET_DIVISIONS_LEFT(c, t)  ((c & 0xFFFFC0FF) | (t << 8)) 
-#define SUB_DIVISIONS_LEFT(c, t)  ((((c & 0x3F00) >> 8) - 1) << 8 | (c & 0xFFFFC0FF)) 
+#define SUB_DIVISIONS_LEFT(c)     ((((c & 0x3F00) >> 8) - 1) << 8 | (c & 0xFFFFC0FF)) 
+
+#define DIVISION_TIME(cell)       ((cell & 0xFC000) >> 14)
+#define SET_DIVISION_TIME(c, t)   ((c & 0xFFF03FFF) | (t << 14)) 
+#define SUB_DIVISION_TIME(c)      ((((c & 0xFC000) >> 14) - 1) << 14 | (c & 0xFFF03FFF))
 
 void initializeCells(int ***cells, int x, int y);
 void drawCell(cairo_t *cr, int cell, int x, int y, int size);
@@ -32,3 +36,4 @@ void createCell(int state, int x, int y, int **buff);
 void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff);
 void calculateHeadCollisionFar(int fromX, int fromY, int toX, int toY, int **cells, int **buff);
 void calculateHeadCollisionNear(int fromX, int fromY, int toX, int toY, int **cells, int **buff);
+void reproduceCell(int x, int y, int **cells, int **buff);

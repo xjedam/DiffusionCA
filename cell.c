@@ -178,6 +178,11 @@ void dbgCount(int **cells, int id) {
 }
 
 void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
+	if(DIVISION_TIME(cells[fromX][fromY]) == 1) {
+		reproduceCell(fromX, fromY, cells, buff);
+	} else {
+		cells[fromX][fromY] = SUB_DIVISION_TIME(cells[fromX][fromY]);
+	}
 	//printf("Ruszenie [%i, %i] wektor %i z [%i, %i] wektor %i lub %i\n", fromX, fromY, DIRECTION(cells[fromX][fromY]),
 	//	toX, toY, DIRECTION(cells[toX][toY]), DIRECTION(buff[toX][toY]));
 	int tmp, id = gCount;
@@ -292,6 +297,10 @@ void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 			}
 		}
 	}
+}
+
+void reproduceCell(int x, int y, int **cells, int **buff) {
+	cells[x][y] = SET_DIVISION_TIME(cells[x][y], REPRODUCTION_INTERVAL);
 }
 
 void calculateHeadCollisionFar(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
