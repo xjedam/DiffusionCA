@@ -7,6 +7,7 @@
 #include "statistic.h"
 
 int **cells, **buff, isPause = 1;
+statistics_t *stats;
 clock_t start, stop;
 
 static void calculate_cycle(GtkWidget *widget) {
@@ -21,7 +22,7 @@ static void calculate_cycle(GtkWidget *widget) {
   tmp = cells;
   cells = buff;
   buff = tmp;
-  printStatistics(stdout, cells, FALSE);
+  calculateStatistics(stdout, cells, FALSE, stats);
 
   if(!isPause) {
     gtk_widget_queue_draw(widget);
@@ -164,7 +165,8 @@ int main(int argc, char *argv[]) {
   
   initializeCells(&cells, MODEL_SIZE_X, MODEL_SIZE_Y);
   initializeCells(&buff, MODEL_SIZE_X, MODEL_SIZE_Y);
-  printStatistics(stdout, cells, TRUE);
+  stats = initializeStatistics();
+  calculateStatistics(stdout, cells, TRUE, stats);
   //cells[52][45] = CHANGE_TYPE(MOVING_R, TYPE1);
   //cells[72][45] = CHANGE_TYPE(MOVING_L, TYPE2);
   //cells[53][47] = CHANGE_TYPE(MOVING_R, TYPE3);
