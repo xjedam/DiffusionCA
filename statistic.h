@@ -9,14 +9,13 @@ typedef struct STAT {
 	double probability;
 } probability_t;
 
-typedef struct PROB {
-	int ***count;
-	probability_t ***probabilities;
+typedef struct SITE_PROB {
+	probability_t *probabilities;
+	int *lastValues;
 	int startIndex;
 	int stopIndex;
-	int countTotal;
 } statistics_t;
 
 int countCells(int x1, int y1, int x2, int y2, int **cells);
-statistics_t *initializeStatistics();
-void calculateStatistics(FILE *out, int **cells, int printHeaders, statistics_t *stats);
+statistics_t **initializeStatistics();
+void calculateStatistics(FILE *out, int **cells, int printHeaders, statistics_t **stats);

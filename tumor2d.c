@@ -7,7 +7,7 @@
 #include "statistic.h"
 
 int **cells, **buff, isPause = 1;
-statistics_t *stats;
+statistics_t **stats;
 clock_t start, stop;
 
 static void calculate_cycle(GtkWidget *widget) {
