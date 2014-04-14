@@ -27,6 +27,8 @@
 #define SET_DIVISION_TIME(c, t)   ((c & 0xFFF03FFF) | (t << 14)) 
 #define SUB_DIVISION_TIME(c)      ((((c & 0xFC000) >> 14) - 1) << 14 | (c & 0xFFF03FFF))
 
+#define NEW_CELL_DIVISIONS        50
+
 void initializeCells(int ***cells, int x, int y);
 void drawCell(cairo_t *cr, int cell, int x, int y, int size);
 void eraseCell(cairo_t *cr, int x, int y, int size);

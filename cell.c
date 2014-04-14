@@ -49,6 +49,17 @@ void eraseCell(cairo_t *cr, int x, int y, int size) {
 }
 
 void calculateCell(int **cells, int **buff, int x, int y) {
+	if(DIVISION_TIME(cells[x][y]) == 1) {
+		if(DIVISIONS_LEFT(cells[x][y]) > 0) {
+			reproduceCell(x, y, cells, buff);
+		} else {
+			cells[x][y] = 0;
+			return;
+		}
+	} else {
+		cells[x][y] = SUB_DIVISION_TIME(cells[x][y]);
+	}
+
 	int target_y, target_x;
 	switch(DIRECTION(cells[x][y])) {
 		case MOVING_UP:
@@ -178,11 +189,6 @@ void dbgCount(int **cells, int id) {
 }
 
 void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
-	if(DIVISION_TIME(cells[fromX][fromY]) == 1) {
-		reproduceCell(fromX, fromY, cells, buff);
-	} else {
-		cells[fromX][fromY] = SUB_DIVISION_TIME(cells[fromX][fromY]);
-	}
 	//printf("Ruszenie [%i, %i] wektor %i z [%i, %i] wektor %i lub %i\n", fromX, fromY, DIRECTION(cells[fromX][fromY]),
 	//	toX, toY, DIRECTION(cells[toX][toY]), DIRECTION(buff[toX][toY]));
 	int tmp, id = gCount;
@@ -300,7 +306,25 @@ void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 }
 
 void reproduceCell(int x, int y, int **cells, int **buff) {
-	cells[x][y] = SET_DIVISION_TIME(cells[x][y], REPRODUCTION_INTERVAL);
+	int newX, newY, startX, startY, i, j;
+	cells[x][y] = SUB_DIVISIONS_LEFT(SET_DIVISION_TIME(cells[x][y], REPRODUCTION_INTERVAL));
+	int cell = CHANGE_DIRECTION(cells[x][y], rand()%8+2);
+
+	startX = rand()%3;
+	startY = rand()%3;
+	for(i=0; i<3; i++) {
+		for(j=0; j<3; j++) {
+			newX = (startX + i) % 3;
+			newY = (startY + j) % 3;
+			if(x + newX > 0 && y + newY > 0 &&
+			 		x + newX < MODEL_SIZE_X - 1 &&
+			  	y + newY < MODEL_SIZE_Y - 1 &&
+			  	cells[x + newX - 1][y + newY - 1] == 0) {
+				createCell(cell, x + newX - 1, y + newY - 1, cells);
+				return;
+			}
+		}
+	}
 }
 
 void calculateHeadCollisionFar(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {

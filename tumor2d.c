@@ -34,7 +34,7 @@ static gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer data) {
   stop = clock();
   if(((float)(stop - start))/CLOCKS_PER_SEC < ITER_DELAY && !isPause){
     //printf("%f\n", ITER_DELAY - (((float)(stop - start))/CLOCKS_PER_SEC));
-    SLEEP_FUNC((ITER_DELAY - (((float)(stop - start))/CLOCKS_PER_SEC))*1000);
+    SLEEP_FUNC((ITER_DELAY - (((float)(stop - start))/CLOCKS_PER_SEC))*SLEEP_MULTIPLIER);
   }
   start = clock();
   clear_surface(cr);
@@ -127,7 +127,12 @@ static gboolean buttonPressCallback(GtkWidget *widget, GdkEventButton *event, gp
   if (event->button == 1)
     {
       //printf("Przycisk wcisniety [%f, %f]\n", event->x, event->y);
-      createCell(CHANGE_TYPE((rand()%8)+2,(rand()%5)+1), event->x/(CELL_SIZE+CELL_SEPARATION)-1, event->y/(CELL_SIZE+CELL_SEPARATION)-1, cells);
+      createCell(
+        SET_DIVISION_TIME(SET_DIVISIONS_LEFT(CHANGE_TYPE((rand()%8)+2,(rand()%5)+1), NEW_CELL_DIVISIONS), REPRODUCTION_INTERVAL),
+        event->x/(CELL_SIZE+CELL_SEPARATION)-1,
+        event->y/(CELL_SIZE+CELL_SEPARATION)-1,
+        cells
+      );
       gtk_widget_queue_draw(widget);
       //draw_brush (widget, event->x, event->y);
     }
@@ -145,7 +150,12 @@ static gboolean buttonPressCallback(GtkWidget *widget, GdkEventButton *event, gp
 static gboolean mouseMotionCallback(GtkWidget *widget, GdkEventMotion *event, gpointer data) {
 
   if (event->state & GDK_BUTTON1_MASK) {
-    createCell(CHANGE_TYPE((rand()%8)+2,(rand()%5)+1), event->x/(CELL_SIZE+CELL_SEPARATION) - 1, event->y/(CELL_SIZE+CELL_SEPARATION) - 1, cells);
+    createCell(
+        SET_DIVISION_TIME(SET_DIVISIONS_LEFT(CHANGE_TYPE((rand()%8)+2,(rand()%5)+1), NEW_CELL_DIVISIONS), REPRODUCTION_INTERVAL),
+        event->x/(CELL_SIZE+CELL_SEPARATION)-1,
+        event->y/(CELL_SIZE+CELL_SEPARATION)-1,
+        cells
+      );
     gtk_widget_queue_draw(widget);
     //createCell(4, event->x/(CELL_SIZE+CELL_SEPARATION), event->y/(CELL_SIZE+CELL_SEPARATION), cells);
     //printf("Przycisk ciagniety [%f, %f]\n", event->x, event->y);
@@ -172,11 +182,11 @@ int main(int argc, char *argv[]) {
   //cells[53][47] = CHANGE_TYPE(MOVING_R, TYPE3);
   //cells[72][47] = CHANGE_TYPE(MOVING_L, TYPE4);
 
-  cells[20][20] = CHANGE_TYPE(MOVING_R, TYPE1);
-  cells[26][26] = CHANGE_TYPE(MOVING_UP, TYPE5);
+  //cells[20][20] = CHANGE_TYPE(MOVING_R, TYPE1);
+  //cells[26][26] = CHANGE_TYPE(MOVING_UP, TYPE5);
 
-  cells[55][8] = CHANGE_TYPE(MOVING_DOWN_L, TYPE1);
-  cells[55][9] = CHANGE_TYPE(MOVING_L, TYPE2);
+  //cells[55][8] = CHANGE_TYPE(MOVING_DOWN_L, TYPE1);
+  //cells[55][9] = CHANGE_TYPE(MOVING_L, TYPE2);
   //cells[26][45] = 3;
   gtk_init(&argc, &argv);
 

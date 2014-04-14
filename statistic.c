@@ -67,7 +67,7 @@ statistics_t **initializeStatistics() {
 
 void calculateStatistics(FILE *out, int **cells, int printHeaders, statistics_t **stats) {
   int i, j, k, x1, y1, count, tmp, inputIndex;
-  double average;
+  double average, sqAvg, var, stdDev;
   if(printHeaders) {
     fprintf(out, "#Index\tCount\n");
   }
@@ -107,13 +107,19 @@ void calculateStatistics(FILE *out, int **cells, int printHeaders, statistics_t 
       //printf("3, [10]=%i\n", stats->count[1][0]);
       // count average
       average = 0.0;
+      sqAvg = 0.0;
+      var = 0.0;
+      stdDev = 0.0;
       for(k = 0; k < AVERAGED_ITERATIONS; k++) {
         if(stats[i][j].probabilities[k].probability >= DBL_ZERO_COMP_PRECISION) {
           average += stats[i][j].probabilities[k].value * stats[i][j].probabilities[k].probability;
+          sqAvg += stats[i][j].probabilities[k].value * stats[i][j].probabilities[k].value * stats[i][j].probabilities[k].probability;
         } 
       }
+      var = sqAvg - average * average;
+      stdDev = sqrt(var);
       
-      fprintf(out, "[%i, %i]\tcount: %i\t avg:%lf\n", i, j, count, average);
+      fprintf(out, "[%i, %i]\tcount: %i\tavg: %lf\tVariance: %lf\tStd dev: %lf\n", i, j, count, average, var, stdDev);
     }
   }
 }
