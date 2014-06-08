@@ -6,6 +6,10 @@
 #include "cell.h"
 #include "statistic.h"
 
+// statistics_t globalStats;
+int x_size = ceil(((double)MODEL_SIZE_X) / CELLCOUNT_FIELD_SIZE_X);
+int y_size = ceil(((double)MODEL_SIZE_Y) / CELLCOUNT_FIELD_SIZE_Y);
+
 int countCells(int x1, int y1, int x2, int y2, int **cells) {
   int i, j, count = 0;
   for(i = x1; i <= x2; i++) {
@@ -20,9 +24,7 @@ int countCells(int x1, int y1, int x2, int y2, int **cells) {
 }
 
 statistics_t **initializeStatistics() {
-  int i, j, k, 
-    x_size = ceil(((double)MODEL_SIZE_X) / CELLCOUNT_FIELD_SIZE_X),
-    y_size = ceil(((double)MODEL_SIZE_Y) / CELLCOUNT_FIELD_SIZE_Y);
+  int i, j, k;
 
   statistics_t **stats = (statistics_t **)malloc(x_size * sizeof(statistics_t *));
   for(i = 0; i < x_size; i++) {
@@ -40,6 +42,16 @@ statistics_t **initializeStatistics() {
     }
   }
 
+//  globalStats.probabilities = (probability_t *)malloc(AVERAGED_ITERATIONS * sizeof(probability_t));
+//  globalStats.lastValues = (int *)malloc(AVERAGED_ITERATIONS * sizeof(int));
+//  globalStats.startIndex = 0;
+//  globalStats.stopIndex = 0;
+//  for(k = 0; k < AVERAGED_ITERATIONS; k++) {
+//    globalStats.probabilities[k].value = EMPTY_VALUE;
+//    globalStats.lastValues[k] = EMPTY_VALUE;
+//   globalStats.probabilities[k].probability = 0.0;
+//  }
+  
   // printf("1 x_size=%i, y_size=%i\n", x_size, y_size);
   // stats->startIndex = 0;
   // stats->stopIndex = 0;
@@ -67,9 +79,9 @@ statistics_t **initializeStatistics() {
 
 void calculateStatistics(FILE *out, int **cells, int printHeaders, statistics_t **stats) {
   int i, j, k, x1, y1, count, tmp, inputIndex;
-  double average, sqAvg, var, stdDev;
+  double average, sqAvg, var, stdDev, globDevAvg = .0;
   if(printHeaders) {
-    fprintf(out, "#Index\tCount\n");
+    fprintf(out, "#Index\tCount\tAverage\tVariance\tStandard deviation\n");
   }
   for(i = 0; i * CELLCOUNT_FIELD_SIZE_X < MODEL_SIZE_X; i++) {
     for(j = 0; j * CELLCOUNT_FIELD_SIZE_Y < MODEL_SIZE_Y; j++) {
@@ -118,8 +130,10 @@ void calculateStatistics(FILE *out, int **cells, int printHeaders, statistics_t 
       }
       var = sqAvg - average * average;
       stdDev = sqrt(var);
-      
-      fprintf(out, "[%i, %i]\tcount: %i\tavg: %lf\tVariance: %lf\tStd dev: %lf\n", i, j, count, average, var, stdDev);
+      globDevAvg += stdDev;
+      fprintf(out, "[%i, %i]\t%i\t%lf\t%lf\t%lf\n", i, j, count, average, var, stdDev);
     }
   }
+  globDevAvg /= (i * j);
+  fprintf(out, "\n#Global standard deviation average: %lf\n", globDevAvg);
 }

@@ -6,7 +6,7 @@
 #include "cell.h"
 #include "statistic.h"
 
-int **cells, **buff, isPause = 1;
+int **cells, **buff, isPause = 1, iteration = 0;
 statistics_t **stats;
 clock_t start, stop;
 
@@ -23,17 +23,17 @@ static void calculate_cycle(GtkWidget *widget) {
   cells = buff;
   buff = tmp;
   calculateStatistics(stdout, cells, FALSE, stats);
-
+  iteration++;
   if(!isPause) {
     gtk_widget_queue_draw(widget);
   }
+  printf("Iteration number: %i\n", iteration);
 }
 
 static gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer data) {
   int i, j, ziarno;
   stop = clock();
   if(((float)(stop - start))/CLOCKS_PER_SEC < ITER_DELAY && !isPause){
-    //printf("%f\n", ITER_DELAY - (((float)(stop - start))/CLOCKS_PER_SEC));
     SLEEP_FUNC((ITER_DELAY - (((float)(stop - start))/CLOCKS_PER_SEC))*SLEEP_MULTIPLIER);
   }
   start = clock();
@@ -43,14 +43,7 @@ static gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer data) {
   gdk_cairo_set_source_rgba (cr, &color);
   width = gtk_widget_get_allocated_width (widget);
   height = gtk_widget_get_allocated_height (widget);
-  // drawCell(cr, 1,1,1,CELL_SIZE);
-  // moveCell(cr, 1, 1, 1, 4, CELL_SIZE);
-  // gdk_cairo_set_source_rgba (cr, &color);
-  // drawCell(cr, 1,1,2,CELL_SIZE);
-  // drawCell(cr, 1,2,2,CELL_SIZE);
-  // eraseCell(cr, 2,2,CELL_SIZE);
-  // gdk_cairo_set_source_rgba (cr, &color);
-  // drawCell(cr, 1,2,3,CELL_SIZE);
+
   int count = 0;
   for(i = 0; i < MODEL_SIZE_X; i++) {
     for(j = 0; j < MODEL_SIZE_Y; j++) {
@@ -177,17 +170,6 @@ int main(int argc, char *argv[]) {
   initializeCells(&buff, MODEL_SIZE_X, MODEL_SIZE_Y);
   stats = initializeStatistics();
   calculateStatistics(stdout, cells, TRUE, stats);
-  //cells[52][45] = CHANGE_TYPE(MOVING_R, TYPE1);
-  //cells[72][45] = CHANGE_TYPE(MOVING_L, TYPE2);
-  //cells[53][47] = CHANGE_TYPE(MOVING_R, TYPE3);
-  //cells[72][47] = CHANGE_TYPE(MOVING_L, TYPE4);
-
-  //cells[20][20] = CHANGE_TYPE(MOVING_R, TYPE1);
-  //cells[26][26] = CHANGE_TYPE(MOVING_UP, TYPE5);
-
-  //cells[55][8] = CHANGE_TYPE(MOVING_DOWN_L, TYPE1);
-  //cells[55][9] = CHANGE_TYPE(MOVING_L, TYPE2);
-  //cells[26][45] = 3;
   gtk_init(&argc, &argv);
 
   builder = createButtons();

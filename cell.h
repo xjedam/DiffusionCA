@@ -23,11 +23,11 @@
 #define SET_DIVISIONS_LEFT(c, t)  ((c & 0xFFFFC0FF) | (t << 8)) 
 #define SUB_DIVISIONS_LEFT(c)     ((((c & 0x3F00) >> 8) - 1) << 8 | (c & 0xFFFFC0FF)) 
 
-#define DIVISION_TIME(cell)       ((cell & 0xFC000) >> 14)
-#define SET_DIVISION_TIME(c, t)   ((c & 0xFFF03FFF) | (t << 14)) 
-#define SUB_DIVISION_TIME(c)      ((((c & 0xFC000) >> 14) - 1) << 14 | (c & 0xFFF03FFF))
+#define DIVISION_TIME(cell)       ((cell & 0xFFC000) >> 14)
+#define SET_DIVISION_TIME(c, t)   ((c & 0xFF003FFF) | (t << 14)) 
+#define SUB_DIVISION_TIME(c)      ((((c & 0xFFC000) >> 14) - 1) << 14 | (c & 0xFF003FFF))
 
-#define NEW_CELL_DIVISIONS        50
+#define NEW_CELL_DIVISIONS        1
 
 void initializeCells(int ***cells, int x, int y);
 void drawCell(cairo_t *cr, int cell, int x, int y, int size);

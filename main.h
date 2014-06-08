@@ -7,7 +7,8 @@
 #define ITER_DELAY 0.2
 #define TITLE "Simple tumor simulator 2d"
 #define PREDICTIVE_BOUNCE_CHANCE 80
-#define REPRODUCTION_INTERVAL 25
+#define DIVIDE_CELLS 0
+#define REPRODUCTION_INTERVAL 60
 
 #if defined(__CYGWIN__) || defined(_WIN64) || defined(_WIN32)
   #include <windows.h>

@@ -49,16 +49,18 @@ void eraseCell(cairo_t *cr, int x, int y, int size) {
 }
 
 void calculateCell(int **cells, int **buff, int x, int y) {
-	if(DIVISION_TIME(cells[x][y]) == 1) {
-		if(DIVISIONS_LEFT(cells[x][y]) > 0) {
-			reproduceCell(x, y, cells, buff);
-		} else {
-			cells[x][y] = 0;
-			return;
-		}
-	} else {
-		cells[x][y] = SUB_DIVISION_TIME(cells[x][y]);
-	}
+  if(DIVIDE_CELLS) {
+    if(DIVISION_TIME(cells[x][y]) == 1) {
+      if(DIVISIONS_LEFT(cells[x][y]) > 0) {
+        reproduceCell(x, y, cells, buff);
+      } else {
+        cells[x][y] = 0;
+        return;
+      }
+    } else {
+      cells[x][y] = SUB_DIVISION_TIME(cells[x][y]);
+    }
+  }
 
 	int target_y, target_x;
 	switch(DIRECTION(cells[x][y])) {
