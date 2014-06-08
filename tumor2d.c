@@ -7,6 +7,7 @@
 #include "statistic.h"
 
 int **cells, **buff, isPause = 1, iteration = 0;
+float fpstime = .0;
 statistics_t **stats;
 clock_t start, stop;
 
@@ -32,11 +33,14 @@ static void calculate_cycle(GtkWidget *widget) {
 
 static gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer data) {
   int i, j, ziarno;
+  float tmp;
   stop = clock();
   if(((float)(stop - start))/CLOCKS_PER_SEC < ITER_DELAY && !isPause){
     SLEEP_FUNC((ITER_DELAY - (((float)(stop - start))/CLOCKS_PER_SEC))*SLEEP_MULTIPLIER);
   }
+  tmp += ((float)(stop - start))/CLOCKS_PER_SEC;
   start = clock();
+  
   clear_surface(cr);
   guint width, height;
   GdkRGBA color = {.5, .5, .5, 1.0};
@@ -57,8 +61,10 @@ static gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer data) {
   printf("count: %i\n", count);
   if(!isPause) {
     calculate_cycle(widget);
+    fpstime += tmp;
+    printf("FPS: %f\n", (float)1 / (fpstime / (float)iteration));
   }
-
+  
  return FALSE;
 }
 
