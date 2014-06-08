@@ -173,8 +173,10 @@ void changeStateCell(int state, int x, int y, int **buff) {
 }
 
 void createCell(int state, int x, int y, int **buff) {
-	printf("Created cell at [%i, %i]: %i\n", x, y, DIRECTION(state));
-	buff[x][y] = state;
+  if(x > -1  && y > -1 && x < MODEL_SIZE_X && y < MODEL_SIZE_Y) {
+    printf("Created cell at [%i, %i]: %i\n", x, y, DIRECTION(state));
+    buff[x][y] = state;
+  }
 }
 
 int gCount = 0;
