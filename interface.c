@@ -14,7 +14,7 @@ GtkBuilder *createButtons() {
 void clear_surface(cairo_t *cr){
   //printf("clearing\n\n");
 
-  cairo_set_source_rgb(cr, 0, 0, 0);
+  cairo_set_source_rgb(cr, 255, 255, 255);
   cairo_paint(cr);
 
   //cairo_destroy(cr);
