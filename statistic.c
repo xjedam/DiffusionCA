@@ -51,28 +51,6 @@ statistics_t **initializeStatistics() {
     globalStats.lastValues[k] = EMPTY_VALUE;
     globalStats.probabilities[k].probability = 0.0;
   }
-  
-  // printf("1 x_size=%i, y_size=%i\n", x_size, y_size);
-  // stats->startIndex = 0;
-  // stats->stopIndex = 0;
-  // stats->countTotal = 0;
-  // stats->count = (int ***)malloc(x_size * sizeof(int **));
-  // stats->probabilities = (probability_t ***)malloc(x_size * sizeof(probability_t **));
-  // for(i = 0; i < x_size; i++) {
-  //   stats->count[i] = (int **)malloc(y_size * sizeof(int *));
-  //   stats->probabilities[i] = (probability_t **)malloc(y_size * sizeof(probability_t *));
-  //   for(j = 0; j < y_size; j++) {
-  //     stats->count[i][j] = (int *)malloc(AVERAGED_ITERATIONS * sizeof(int));
-  //     stats->probabilities[i][j] = (probability_t *)malloc(AVERAGED_ITERATIONS * sizeof(probability_t)); 
-  //     for(k = 0; k < AVERAGED_ITERATIONS; k++) {
-  //       stats->count[i][j][k] = 0;
-  //       stats->probabilities[i][j][k].value = EMPTY_VALUE;
-  //       stats->probabilities[i][j][k].probability = 0.0;
-  //       //printf("Alloc count[i]:%i\t[i][j]:%i\t[i][j][k]:%i\n", stats->count[i], stats->count[i][j], &stats->count[i][j][k]);
-  //     }
-  //   }
-  //   //printf("SIZEOF double: %i, int: %i, probability_t: %i\n", sizeof(double), sizeof(int), sizeof(probability_t));
-  // }
 
   return stats;
 }

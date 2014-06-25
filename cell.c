@@ -14,8 +14,6 @@ void initializeCells(int ***cells, int x, int y) {
 }
 
 void drawCell(cairo_t *cr, int x, int y, int state, int size) {
-	//draw_sq(cr, x, y, size);
-	//printf("%i %i\n", x, y);
 	GdkRGBA color = {0.1, 0.1, 0.1, 1.0};
 	switch(TYPE(state)) {
 		case TYPE1:
@@ -179,24 +177,8 @@ void createCell(int state, int x, int y, int **buff) {
   }
 }
 
-int gCount = 0;
-void dbgCount(int **cells, int id) {
-	int count = 0, i, j;
-  for(i = 0; i<MODEL_SIZE_X; i++) {
-    for(j = 0; j<MODEL_SIZE_Y; j++) {
-      if(cells[i][j] != 0) {
-        count++;
-      }
-    }
-  }
-  printf("count %i: %i\n", id, count);
-}
-
 void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
-	//printf("Ruszenie [%i, %i] wektor %i z [%i, %i] wektor %i lub %i\n", fromX, fromY, DIRECTION(cells[fromX][fromY]),
-	//	toX, toY, DIRECTION(cells[toX][toY]), DIRECTION(buff[toX][toY]));
-	int tmp, id = gCount;
-	//gCount++;
+	int tmp;
 	//sprawdzamy czy komorka rekurencyjnie nie zostala przemieszczona przez inna kolizje zagniezdzona
 	if(cells[fromX][fromY] != 0) {
 		//brak zderzenia
@@ -205,10 +187,6 @@ void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 			cells[fromX][fromY] = 0;
 		//wystapilo zderzenie
 		} else {
-			//dbgCount(cells, id);
-			/*int *neighbours = malloc(sizeof(int) * 8);
-			neighbours[0] = (y-1+MODEL_SIZE_Y) % MODEL_SIZE_Y;
-			neighbours[1] = */
 			//brak ruchu - komorka stacjonarna
 			if(DIRECTION(cells[fromX][fromY]) == STATIONARY) {
 				//printf("stationary \n");
@@ -217,46 +195,24 @@ void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 				//zderzenie czolowe do tej samej komorki x->o<-x
 			} else if(buff[toX][toY] != 0 && DIRECTION(buff[toX][toY]) != STATIONARY && 
 					abs(DIRECTION(buff[toX][toY]) - DIRECTION(cells[fromX][fromY])) == 4){
-				// printf("zderzenie czolowe do tej samej komorki[%i, %i] wektor %i z [%i, %i] wektor %i lub %i\n", fromX, fromY, DIRECTION(cells[fromX][fromY]),
-				 // toX, toY, DIRECTION(cells[toX][toY]), DIRECTION(buff[toX][toY]));
 				calculateHeadCollisionFar(fromX, fromY, toX, toY, cells, buff);
-				//dbgCount(cells, id);
 				//zderzenie czolowe do roznych komorek x-><-x
 			} else if((cells[toX][toY] != 0 && DIRECTION(cells[toX][toY]) != STATIONARY &&
 					abs(DIRECTION(cells[toX][toY]) - DIRECTION(cells[fromX][fromY])) == 4)) {
 				printf("zderzenie czolowe do roznych komorek [%i, %i] wektor %i z [%i, %i] wektor %i lub %i\n", fromX, fromY, DIRECTION(cells[fromX][fromY]),
 				 toX, toY, DIRECTION(cells[toX][toY]), DIRECTION(buff[toX][toY]));
 				calculateHeadCollisionNear(fromX, fromY, toX, toY, cells, buff);
-				//dbgCount(cells, id);
 				//zderzenie pod katem prostym na komorke wchodzaca	x->o
 				//																										 ^x
 			} else if(DIRECTION(buff[toX][toY]) != 0 && DIRECTION(buff[toX][toY]) != STATIONARY && 
 					((DIRECTION(buff[toX][toY]) % 8) + 2 == DIRECTION(cells[fromX][fromY]) || (DIRECTION(cells[fromX][fromY]) % 8) + 2 == DIRECTION(buff[toX][toY]))) {
-				//printf("Zderzenie kat prosty wej [%i, %i] wektor %i z [%i, %i] wektor %i lub %i\n", fromX, fromY, DIRECTION(cells[fromX][fromY]),
-				// toX, toY, DIRECTION(cells[toX][toY]), DIRECTION(buff[toX][toY]));
-        calculateCollisionFar(fromX, fromY, toX, toY, cells, buff);
-				// tmp = DIRECTION(buff[toX][toY]);
-				// cells[toX][toY] = CHANGE_DIRECTION(buff[toX][toY], DIRECTION(cells[fromX][fromY]));
-				// cells[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], tmp);
-				// buff[toX][toY] = 0;
-				// calculateCell(cells, buff, toX, toY);
-				// // jezeli inne zderzenie nie przemiescilo juz dana komorke
-				// if(cells[toX][toY] == 0 && cells[fromX][fromY] != 0 && DIRECTION(cells[fromX][fromY]) == tmp) {
-					// cells[toX][toY] = cells[fromX][fromY];
-					// cells[fromX][fromY] = 0;
-					// calculateCell(cells, buff, toX, toY);
-					// cells[toX][toY] = 0;
-				// }
-				//dbgCount(cells, id);
-				//wepchniecie w tym samym kierunku z innego zdarzenia - nie ruszaj czastki po zderzeniu
+				calculateCollisionFar(fromX, fromY, toX, toY, cells, buff);
+			//wepchniecie w tym samym kierunku z innego zdarzenia - nie ruszaj czastki po zderzeniu
 			} else if(DIRECTION(cells[fromX][fromY]) == DIRECTION(buff[toX][toY])) {
-				// printf("Wepchniecie w ten sam kierunek z innego zderzenia! [%i, %i] wektor %i z [%i, %i] wektor %i lub %i\n", fromX, fromY, DIRECTION(cells[fromX][fromY]),
-				 // toX, toY, DIRECTION(cells[toX][toY]), DIRECTION(buff[toX][toY]));
 				if(buff[fromX][fromY] == 0) {
 					buff[fromX][fromY] = cells[fromX][fromY];
 					cells[fromX][fromY] = 0;
 				} else {
-					printf("Przypadek z komorka w buforze\n");
 					int rnd = (rand()%8)+2;
 					cells[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], rnd);
 					calculateCell(cells, buff, fromX, fromY);
@@ -264,29 +220,11 @@ void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 						cells[fromX][fromY] = 0;
 					}
 				}
-				//dbgCount(cells, id);
 				//pozostale - jednoczesne wejscie na komorke
 			} else if(buff[toX][toY] != 0){
-				//printf("Generyczny przypadek zderzenia na wejscie [%i, %i] wektor %i z [%i, %i] wektor %i\n", fromX, fromY, DIRECTION(cells[fromX][fromY]),
-				// toX, toY, DIRECTION(buff[toX][toY]));
-        calculateCollisionFar(fromX, fromY, toX, toY, cells, buff);
-				// tmp = DIRECTION(buff[toX][toY]);
-				// cells[toX][toY] = CHANGE_DIRECTION(buff[toX][toY], DIRECTION(cells[fromX][fromY]));
-				// cells[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], tmp);
-				// buff[toX][toY] = 0;
-				// calculateCell(cells, buff, toX, toY);
-				// //jezeli inne zderzenie nie przemiescilo juz dana komorke
-				// if(cells[toX][toY] == 0 && cells[fromX][fromY] != 0 && DIRECTION(cells[fromX][fromY]) == tmp) {
-					// cells[toX][toY] = cells[fromX][fromY];
-					// cells[fromX][fromY] = 0;
-					// calculateCell(cells, buff, toX, toY);
-					// cells[toX][toY] = 0;
-				// }
-				//dbgCount(cells, id);
-				//pozostale - zderzenie z wychodzaca komorka
+				calculateCollisionFar(fromX, fromY, toX, toY, cells, buff);
+			//pozostale - zderzenie z wychodzaca komorka
 			} else if(DIRECTION(cells[fromX][fromY]) != DIRECTION(cells[toX][toY])){
-				// printf("Generyczny przypadek zderzenia na wyjscie [%i, %i] wektor %i z [%i, %i] wektor %i\n", fromX, fromY, DIRECTION(cells[fromX][fromY]),
-				 // toX, toY, DIRECTION(cells[toX][toY]));
 				tmp = DIRECTION(cells[toX][toY]);
 				cells[toX][toY] = CHANGE_DIRECTION(cells[toX][toY], DIRECTION(cells[fromX][fromY]));
 				cells[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], OPPOSITE_DIRECTION(tmp));
@@ -297,15 +235,11 @@ void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 					calculateCell(cells, buff, toX, toY);
 					cells[toX][toY] = 0;
 				}		
-				//dbgCount(cells, id);
 			} else {
-				// printf("Niekolizyjny? przypadek [%i, %i] wektor %i z [%i, %i] wektor %i lub %i\n", fromX, fromY, DIRECTION(cells[fromX][fromY]),
-				 // toX, toY, DIRECTION(cells[toX][toY]), DIRECTION(buff[toX][toY]));
 				calculateCell(cells, buff, toX, toY);
 				cells[toX][toY] = 0;
 				buff[toX][toY] = cells[fromX][fromY];
 				cells[fromX][fromY] = 0;
-				//dbgCount(cells, id);
 			}
 		}
 	}
@@ -314,7 +248,10 @@ void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 void reproduceCell(int x, int y, int **cells, int **buff) {
 	int newX, newY, startX, startY, i, j;
 	cells[x][y] = SUB_DIVISIONS_LEFT(SET_DIVISION_TIME(cells[x][y], REPRODUCTION_INTERVAL));
-	int cell = CHANGE_DIRECTION(cells[x][y], rand()%8+2);
+	int cell = cells[x][y];
+	if(!ONLY_STATIONARY) {
+		cell = CHANGE_DIRECTION(cells[x][y], rand()%8+2);
+	}
 
 	startX = rand()%3;
 	startY = rand()%3;
@@ -334,52 +271,52 @@ void reproduceCell(int x, int y, int **cells, int **buff) {
 }
 
 void calculateHeadCollisionFar(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
-	int tmp, dirChange, rnd = rand() % 90;
-	if(rnd < 30) {
+	int tmp, dirChange, rnd = rand() % 75;
+	if(rnd < 15) {
 		buff[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], OPPOSITE_DIRECTION(DIRECTION(cells[fromX][fromY])));
 		cells[fromX][fromY] = 0;
 		cells[toX][toY] = CHANGE_DIRECTION(buff[toX][toY], OPPOSITE_DIRECTION(DIRECTION(buff[toX][toY])));
 		buff[toX][toY] = 0;
 		calculateCell(cells, buff, toX, toY);
 		cells[toX][toY] = 0;
-	} else if(rnd < 60){
-    dirChange = 7 - (rnd % 2) * 2;
+	} else if(rnd < 45) {
+		dirChange = 7 - (rnd % 2) * 2;
 		buff[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], ((OPPOSITE_DIRECTION(DIRECTION(cells[fromX][fromY])) + dirChange) % 8) + 2);
 		cells[fromX][fromY] = 0;
 		cells[toX][toY] = CHANGE_DIRECTION(buff[toX][toY], ((OPPOSITE_DIRECTION(DIRECTION(buff[toX][toY])) + dirChange) % 8) + 2);
 		buff[toX][toY] = 0;
-    tmp = cells[fromX][fromY];
+		tmp = cells[fromX][fromY];
 		calculateCell(cells, buff, toX, toY);
 		cells[toX][toY] = 0;
-    if(cells[toX][toY] == 0 && cells[fromX][fromY] != 0 && cells[fromX][fromY] == tmp) {
-      cells[toX][toY] = cells[fromX][fromY];
-      cells[fromX][fromY] = 0;
-      calculateCell(cells, buff, toX, toY);
-    }
+		if(cells[toX][toY] == 0 && cells[fromX][fromY] != 0 && cells[fromX][fromY] == tmp) {
+			cells[toX][toY] = cells[fromX][fromY];
+			cells[fromX][fromY] = 0;
+			calculateCell(cells, buff, toX, toY);
+		}
 	} else {
-    dirChange = 8 - (rnd % 2) * 4;
-    buff[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], ((OPPOSITE_DIRECTION(DIRECTION(cells[fromX][fromY])) + dirChange) % 8) + 2);
+		dirChange = 8 - (rnd % 2) * 4;
+		buff[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], ((OPPOSITE_DIRECTION(DIRECTION(cells[fromX][fromY])) + dirChange) % 8) + 2);
 		cells[fromX][fromY] = 0;
 		cells[toX][toY] = CHANGE_DIRECTION(buff[toX][toY], ((OPPOSITE_DIRECTION(DIRECTION(buff[toX][toY])) + dirChange) % 8) + 2);
 		buff[toX][toY] = 0;
-    tmp = cells[fromX][fromY];
+		tmp = cells[fromX][fromY];
 		calculateCell(cells, buff, toX, toY);
 		cells[toX][toY] = 0;
-    if(cells[toX][toY] == 0 && cells[fromX][fromY] != 0 && cells[fromX][fromY] == tmp) {
-      cells[toX][toY] = cells[fromX][fromY];
-      cells[fromX][fromY] = 0;
-      calculateCell(cells, buff, toX, toY);
-    }
-  }
+		if(cells[toX][toY] == 0 && cells[fromX][fromY] != 0 && cells[fromX][fromY] == tmp) {
+			cells[toX][toY] = cells[fromX][fromY];
+			cells[fromX][fromY] = 0;
+			calculateCell(cells, buff, toX, toY);
+		}
+	}
 }
 
 void calculateCollisionFar(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 	int tmp, dir, rnd = rand() % 90;
   tmp = DIRECTION(buff[toX][toY]);
-  if (rnd < 30 && !OPPOSITE_DIRECTION(DIRECTION(cells[fromX][fromY]) == ((tmp - 1) % 8) + 2)) {
+  if (rnd < 30 && !OPPOSITE_DIRECTION(DIRECTION(cells[fromX][fromY]) == ((tmp - 1) % 8) + 2) && abs(DIRECTION(cells[fromX][fromY]) - tmp) != 1) {
     cells[toX][toY] = CHANGE_DIRECTION(buff[toX][toY], ((DIRECTION(cells[fromX][fromY]) - 1) % 8) + 2);
     cells[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], ((tmp - 1) % 8) + 2);
-	} else if(rnd < 60 && !OPPOSITE_DIRECTION(DIRECTION(cells[fromX][fromY])== ((tmp + 5) % 8) + 2)) {
+	} else if(rnd < 60 && !OPPOSITE_DIRECTION(DIRECTION(cells[fromX][fromY])== ((tmp + 5) % 8) + 2)  && abs(DIRECTION(cells[fromX][fromY]) - tmp) != 1) {
     cells[toX][toY] = CHANGE_DIRECTION(buff[toX][toY], ((DIRECTION(cells[fromX][fromY]) + 5) % 8) + 2);
     cells[fromX][fromY] = CHANGE_DIRECTION(cells[fromX][fromY], ((tmp + 5) % 8) + 2);
   } else {
@@ -415,29 +352,3 @@ void calculateHeadCollisionNear(int fromX, int fromY, int toX, int toY, int **ce
 		cells[toX][toY] = 0;
 	}
 }
-
-// void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
-// 	int tmp;
-// 	if(buff[toX][toY] == 0 && buff[fromX][fromY] == 0) {
-// 		buff[toX][toY] = cells[fromX][fromY];
-// 		//zderzenie przeciwne kierunki
-// 	} else /*if((buff[fromX][fromY]+cells[toX][toY] - buff[toX][toY]+cells[fromX][fromY] + 8) % 8 == 4)*/ {	
-// 		printf("Zderzenie [%i, %i] wektor %i z [%i, %i] wektor %i\n", fromX, fromY, buff[toX][toY]+cells[fromX][fromY],
-// 		 toX, toY, buff[fromX][fromY]+cells[toX][toY]);
-// 		//do ponownego przeliczenia z odwroconym kierunkiem
-// 		tmp = buff[toX][toY];
-// 		//cells[toX][toY] = cells[fromX][fromY];									
-// 		buff[toX][toY] = cells[fromX][fromY];
-// 		//calculateCell(cells, buff, toX, toY);
-
-// 		//odwracamy kierunek i przeliczamy jeszcze raz
-// 		cells[fromX][fromY] = tmp;
-// 		calculateCell(cells, buff, fromX, fromY);
-// 		//printf("Wektor 1: %i\n", cells[fromX][fromY]);
-// 		//printf("Wektor 2: %i\n", cells[toX][toY]);
-// 	} /*else {
-// 		printf("Nieobsluzony przypadek zderzenia [%i, %i] wektor %i z [%i, %i] wektor %i\n", fromX, fromY, cells[fromX][fromY],
-// 		 toX, toY, buff[toX][toY]);
-// 		buff[toX][toY] = cells[fromX][fromY];
-// 	}*/
-// }
