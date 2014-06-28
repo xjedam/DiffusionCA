@@ -5,6 +5,7 @@
 #include "main.h"
 #include "cell.h"
 
+// initializes cells array
 void initializeCells(int ***cells, int x, int y) {
   int i;
   *cells = (int **)malloc(x * sizeof(int *));
@@ -13,6 +14,7 @@ void initializeCells(int ***cells, int x, int y) {
   }
 }
 
+// draws the supplied cell
 void drawCell(cairo_t *cr, int x, int y, int state, int size) {
 	GdkRGBA color = {0.1, 0.1, 0.1, 1.0};
 	switch(TYPE(state)) {
@@ -39,6 +41,7 @@ void drawCell(cairo_t *cr, int x, int y, int state, int size) {
 	cairo_fill (cr);
 }
 
+// clears the supplied lattice node
 void eraseCell(cairo_t *cr, int x, int y, int size) {
 	GdkRGBA color = {0, 0, 0, 1.0};
   gdk_cairo_set_source_rgba (cr, &color);
@@ -46,7 +49,10 @@ void eraseCell(cairo_t *cr, int x, int y, int size) {
 	cairo_fill (cr);
 }
 
+// calculates next position for cell located at x, y
 void calculateCell(int **cells, int **buff, int x, int y) {
+
+  // divide cells if divide mode is enabled and division time is at 1
   if(DIVIDE_CELLS) {
     if(DIVISION_TIME(cells[x][y]) == 1) {
       if(DIVISIONS_LEFT(cells[x][y]) > 0) {
@@ -60,6 +66,7 @@ void calculateCell(int **cells, int **buff, int x, int y) {
     }
   }
 
+  // run moveCell func according to cells direction
 	int target_y, target_x;
 	switch(DIRECTION(cells[x][y])) {
 		case MOVING_UP:
@@ -160,16 +167,16 @@ void calculateCell(int **cells, int **buff, int x, int y) {
 		break;
 		case STATIONARY:
 			moveCell(x, y, x, y, cells, buff);
-			//buff[(x-1+MODEL_SIZE_X) % MODEL_SIZE_X][(y+1) % MODEL_SIZE_Y] = cells[x][y];
 		break;
 	}
-	//cells[x][y] = 0;
 }
 
+// change cell state
 void changeStateCell(int state, int x, int y, int **buff) {
 	buff[x][y] = state;
 }
 
+// create a new cell at x, y
 void createCell(int state, int x, int y, int **buff) {
   if(x > -1  && y > -1 && x < MODEL_SIZE_X && y < MODEL_SIZE_Y) {
     printf("Created cell at [%i, %i]: %i\n", x, y, DIRECTION(state));
@@ -177,37 +184,37 @@ void createCell(int state, int x, int y, int **buff) {
   }
 }
 
+// attempt to move the cell to given lattice node
 void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 	int tmp;
-	//sprawdzamy czy komorka rekurencyjnie nie zostala przemieszczona przez inna kolizje zagniezdzona
+	// check whether cell hasn't moved already due to nearby collision
 	if(cells[fromX][fromY] != 0) {
-		//brak zderzenia
+		// no collision - move the cell
 		if(buff[toX][toY] == 0 && cells[toX][toY] == 0) {
 			buff[toX][toY] = cells[fromX][fromY];
 			cells[fromX][fromY] = 0;
-		//wystapilo zderzenie
+		// collision occured
 		} else {
-			//brak ruchu - komorka stacjonarna
+			// collisions with stationary cells not supported yet
 			if(DIRECTION(cells[fromX][fromY]) == STATIONARY) {
-				//printf("stationary \n");
 				buff[toX][toY] = cells[fromX][fromY];
 				cells[fromX][fromY] = 0;
-				//zderzenie czolowe do tej samej komorki x->o<-x
+				// head on collision into the same node x->o<-x
 			} else if(buff[toX][toY] != 0 && DIRECTION(buff[toX][toY]) != STATIONARY && 
 					abs(DIRECTION(buff[toX][toY]) - DIRECTION(cells[fromX][fromY])) == 4){
 				calculateHeadCollisionFar(fromX, fromY, toX, toY, cells, buff);
-				//zderzenie czolowe do roznych komorek x-><-x
+				// head on collision with node swap attempt x-><-x
 			} else if((cells[toX][toY] != 0 && DIRECTION(cells[toX][toY]) != STATIONARY &&
 					abs(DIRECTION(cells[toX][toY]) - DIRECTION(cells[fromX][fromY])) == 4)) {
 				printf("zderzenie czolowe do roznych komorek [%i, %i] wektor %i z [%i, %i] wektor %i lub %i\n", fromX, fromY, DIRECTION(cells[fromX][fromY]),
 				 toX, toY, DIRECTION(cells[toX][toY]), DIRECTION(buff[toX][toY]));
 				calculateHeadCollisionNear(fromX, fromY, toX, toY, cells, buff);
-				//zderzenie pod katem prostym na komorke wchodzaca	x->o
-				//																										 ^x
+				// 90 degree collision	x->o
+				//											   ^x
 			} else if(DIRECTION(buff[toX][toY]) != 0 && DIRECTION(buff[toX][toY]) != STATIONARY && 
 					((DIRECTION(buff[toX][toY]) % 8) + 2 == DIRECTION(cells[fromX][fromY]) || (DIRECTION(cells[fromX][fromY]) % 8) + 2 == DIRECTION(buff[toX][toY]))) {
 				calculateCollisionFar(fromX, fromY, toX, toY, cells, buff);
-			//wepchniecie w tym samym kierunku z innego zdarzenia - nie ruszaj czastki po zderzeniu
+			// collision with the same direction when the cell gets pushed from another collision - don't move the cell if possible
 			} else if(DIRECTION(cells[fromX][fromY]) == DIRECTION(buff[toX][toY])) {
 				if(buff[fromX][fromY] == 0) {
 					buff[fromX][fromY] = cells[fromX][fromY];
@@ -220,10 +227,10 @@ void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 						cells[fromX][fromY] = 0;
 					}
 				}
-				//pozostale - jednoczesne wejscie na komorke
+				// other collisions
 			} else if(buff[toX][toY] != 0){
 				calculateCollisionFar(fromX, fromY, toX, toY, cells, buff);
-			//pozostale - zderzenie z wychodzaca komorka
+			// other states resulting from >3 way collision or priority problems - needs rework
 			} else if(DIRECTION(cells[fromX][fromY]) != DIRECTION(cells[toX][toY])){
 				tmp = DIRECTION(cells[toX][toY]);
 				cells[toX][toY] = CHANGE_DIRECTION(cells[toX][toY], DIRECTION(cells[fromX][fromY]));
@@ -245,6 +252,7 @@ void moveCell(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 	}
 }
 
+//reproduce the cell - experimental
 void reproduceCell(int x, int y, int **cells, int **buff) {
 	int newX, newY, startX, startY, i, j;
 	cells[x][y] = SUB_DIVISIONS_LEFT(SET_DIVISION_TIME(cells[x][y], REPRODUCTION_INTERVAL));
@@ -270,6 +278,7 @@ void reproduceCell(int x, int y, int **cells, int **buff) {
 	}
 }
 
+// calculates the head collision to the same node
 void calculateHeadCollisionFar(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 	int tmp, dirChange, rnd = rand() % 75;
 	if(rnd < 15) {
@@ -310,6 +319,7 @@ void calculateHeadCollisionFar(int fromX, int fromY, int toX, int toY, int **cel
 	}
 }
 
+// calculates generic collision
 void calculateCollisionFar(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 	int tmp, dir, rnd = rand() % 90;
   tmp = DIRECTION(buff[toX][toY]);
@@ -334,6 +344,7 @@ void calculateCollisionFar(int fromX, int fromY, int toX, int toY, int **cells, 
   }
 }
 
+// calculates head collision with node swap
 void calculateHeadCollisionNear(int fromX, int fromY, int toX, int toY, int **cells, int **buff) {
 	int rnd = rand() % 100;
 	if(rnd < PREDICTIVE_BOUNCE_CHANCE) {

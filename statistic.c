@@ -10,6 +10,7 @@ statistics_t globalStats;
 int x_size = ceil(((double)MODEL_SIZE_X) / CELLCOUNT_FIELD_SIZE_X);
 int y_size = ceil(((double)MODEL_SIZE_Y) / CELLCOUNT_FIELD_SIZE_Y);
 
+// returns cell count in given area
 int countCells(int x1, int y1, int x2, int y2, int **cells) {
   int i, j, count = 0;
   for(i = x1; i <= x2; i++) {
@@ -23,6 +24,7 @@ int countCells(int x1, int y1, int x2, int y2, int **cells) {
   return count;
 }
 
+// initialize statistics structures
 statistics_t **initializeStatistics() {
   int i, j, k;
 
@@ -55,6 +57,7 @@ statistics_t **initializeStatistics() {
   return stats;
 }
 
+// calculates and prints stats for current iteration
 void calculateStatistics(FILE *out, int **cells, int printHeaders, statistics_t **stats) {
   int i, j, k, x1, y1, count, tmp, inputIndex;
   double average, sqAvg, var, stdDev, globDevAvg = .0, globDevSqAvg = .0, globStdDev;
@@ -66,19 +69,17 @@ void calculateStatistics(FILE *out, int **cells, int printHeaders, statistics_t 
       tmp = -2;
       x1 = i * CELLCOUNT_FIELD_SIZE_X;
       y1 = j * CELLCOUNT_FIELD_SIZE_Y;
-      //printf("1 i=%i, j=%i, start=%i, stop=%i, [10]=%i\n", i, j, stats->startIndex, stats->stopIndex, stats->count[1][0]);
+
       // add new element, update list start and stop index
       count = countCells(x1, y1, x1 + CELLCOUNT_FIELD_SIZE_X - 1, y1 + CELLCOUNT_FIELD_SIZE_Y - 1, cells);
-      //printf("1.5 ptr count[i]: %i\tcount[i][j]: %i\n", stats->count[i], stats->count[i][j]);
-      
-      //puts("1.6");
+
       stats[i][j].stopIndex = ((stats[i][j].stopIndex) + 1) % AVERAGED_ITERATIONS;
       if(stats[i][j].startIndex == stats[i][j].stopIndex) {
         tmp = stats[i][j].lastValues[stats[i][j].startIndex];
         stats[i][j].startIndex = ((stats[i][j].startIndex) + 1) % AVERAGED_ITERATIONS;
       }
       stats[i][j].lastValues[stats[i][j].stopIndex] = count;
-      //printf("2, [10]=%i\n", stats->count[1][0]);
+
       // update probabilities
       inputIndex = -1;
       for(k = 0; k < AVERAGED_ITERATIONS; k++) {
@@ -93,9 +94,8 @@ void calculateStatistics(FILE *out, int **cells, int printHeaders, statistics_t 
         }
       }
       stats[i][j].probabilities[inputIndex].value = count;
-      //printf("2.9, [10]=%i\n", stats->count[1][0]);
       stats[i][j].probabilities[inputIndex].probability += (1.0/AVERAGED_ITERATIONS);
-      //printf("3, [10]=%i\n", stats->count[1][0]);
+
       // count average
       average = 0.0;
       sqAvg = 0.0;

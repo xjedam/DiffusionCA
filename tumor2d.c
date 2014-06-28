@@ -11,6 +11,7 @@ float fpstime = .0;
 statistics_t **stats;
 clock_t start, stop;
 
+// calculate next cycle
 static void calculate_cycle(GtkWidget *widget) {
   int i, j, **tmp;
   for(i = 0; i < MODEL_SIZE_X; i++) {
@@ -31,6 +32,7 @@ static void calculate_cycle(GtkWidget *widget) {
   printf("Iteration number: %i\n", iteration);
 }
 
+// draw current iteration
 static gboolean draw_cb(GtkWidget *widget, cairo_t *cr, gpointer data) {
   int i, j, ziarno;
   float tmp;
@@ -176,13 +178,19 @@ int main(int argc, char *argv[]) {
   int seed = time(NULL);
   srand(seed);
   
+  // initialize lattices and statistics
   initializeCells(&cells, MODEL_SIZE_X, MODEL_SIZE_Y);
   initializeCells(&buff, MODEL_SIZE_X, MODEL_SIZE_Y);
   stats = initializeStatistics();
+
+  //calculate statistics zero step
   calculateStatistics(stdout, cells, TRUE, stats);
   gtk_init(&argc, &argv);
 
+  // create the ui and get its reference
   builder = createButtons();
+
+  // create main window, get button references and set their callback functions. 
   window = gtk_builder_get_object(builder, "window");
   gtk_widget_set_size_request(GTK_WIDGET(window), WINDOW_SIZE_X, WINDOW_SIZE_Y);
   gtk_window_set_title (GTK_WINDOW (window), TITLE);
@@ -197,11 +205,12 @@ int main(int argc, char *argv[]) {
   frame = gtk_builder_get_object(builder, "frame");
   g_signal_connect(window, "destroy", G_CALLBACK(destroy), NULL);
 
+  // create the drawing area
   da = gtk_drawing_area_new();
-  
   gtk_widget_set_size_request(GTK_WIDGET(frame), WINDOW_SIZE_X-40, WINDOW_SIZE_Y-40);
   gtk_widget_set_size_request(da, WINDOW_SIZE_X-50, WINDOW_SIZE_Y-50);
 
+  // set drawing area callbacks
   g_signal_connect(da, "draw", G_CALLBACK(draw_cb), NULL);
   g_signal_connect(da,"configure-event", G_CALLBACK(configure_event_cb), NULL);
   g_signal_connect (da, "motion-notify-event", G_CALLBACK(mouseMotionCallback), da);
@@ -209,10 +218,10 @@ int main(int argc, char *argv[]) {
   gtk_widget_set_events (da, gtk_widget_get_events(da)
                              | GDK_BUTTON_PRESS_MASK
                              | GDK_POINTER_MOTION_MASK);
-
   gtk_container_add(GTK_CONTAINER (frame), da);
   g_signal_connect (startButton, "clicked", G_CALLBACK (startButtonCallback), da);
 
+  // draw all of the above
   gtk_widget_show_all(GTK_WIDGET(window));
   
   gtk_main();
